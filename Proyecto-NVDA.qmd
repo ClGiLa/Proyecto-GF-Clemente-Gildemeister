@@ -140,15 +140,13 @@ V = \frac{C_u\cdot P + C_d\cdot (1-P)}{1+r}
 $$
 
 ```{python}
-nvda = yf.Ticker("NVDA")
-# Obtener las fechas de vencimiento de opciones
-opciones = nvda.options
-print("Fechas de vencimiento:", opciones)
 
-# Obtener los datos de opciones para una fecha específica
-opciones_data = nvda.option_chain(opciones[0])  # Cambia el índice según la fecha de vencimiento deseada
-calls = opciones_data.calls
-puts = opciones_data.puts
+S = data['Close'].iloc[-1]
+nvda = yf.Ticker("META")
+
+opt = nvda.option_chain('2025-01-17')
+print(opt)
+
 ```
 
 ```{python}
@@ -160,9 +158,6 @@ r = 0.0642  # Tasa de interés libre de riesgo
 u = 1.1  # Factor de crecimiento en un paso hacia arriba
 d = 0.9  # Factor de crecimiento en un paso hacia abajo
 
-def binomial_model(cu, p, cd, rf):
-    return (cu * p + cd * (1 - p)) / (1 + rf)
-
 # Calcular los valores
 Su = S * u
 Sd = S * d
@@ -172,7 +167,7 @@ cu = max(Su - K, 0)
 cd = max(Sd - K, 0)
 
 # Calcular el precio de la opción
-option_price = binomial_model(cu, p, cd, r)
+option_price = (cu * p + cd * (1 - p)) / (1 + rf)
 
 # Imprimir el resultado
 print(f"El precio de la opción con el Modelo Binomial es: {option_price:.2f}")
