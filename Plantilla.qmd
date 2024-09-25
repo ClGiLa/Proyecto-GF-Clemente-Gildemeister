@@ -7,14 +7,7 @@ bibliography: references.bib
 lang: es-CL
 ---
 
-```{r configuraciones}
-#| message: false
-#| echo: false
-# Esto ya debiera estar cargado en el proyecto en posit.cloud
-#devtools::install_github("business-science/tidyquant")
-#Loads tidyquant, lubridate, xts, quantmod, TTR, and PerformanceAnalytics
-library(tidyverse)
-library(tidyquant)  
+``` python
 ```
 
 # Hito 1:
