@@ -1,13 +1,18 @@
 ---
 title: "Proyecto Gestión Financiera"
-author: "Julio Tejero"
+author: "Clemente Gildemeister"
 format: html
 editor: visual
 bibliography: references.bib
 lang: es-CL
 ---
 
-``` python
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import timedelta
+import yfinance as yf
 ```
 
 # Hito 1:
