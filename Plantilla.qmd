@@ -16,6 +16,7 @@ from datetime import timedelta
 import yfinance as yf
 from scipy.stats import norm
 import plotly.graph_objects as go
+import mplfinance as mpf
 ```
 
 # Hito 1:
@@ -52,6 +53,12 @@ plt.grid()
 plt.legend()
 plt.show()
 
+```
+
+```{python}
+df = yf.download(ticker, start="2023-01-01", end="2024-09-01")
+# Crear gráfico de velas
+mpf.plot(df, type='candle', volume=False, title='Gráfico de Velas de NVDA', style='yahoo', ylabel='Precio', figsize=(14, 7))
 ```
 
 ### Motivación
