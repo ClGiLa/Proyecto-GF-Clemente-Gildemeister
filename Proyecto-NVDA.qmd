@@ -15,7 +15,6 @@ import seaborn as sns
 from datetime import timedelta
 import yfinance as yf
 from scipy.stats import norm
-import plotly.graph_objects as go
 import mplfinance as mpf
 ```
 
@@ -139,24 +138,36 @@ $$
 V = \frac{C_u\cdot P + C_d\cdot (1-P)}{1+r}
 $$
 
-```{python}
+```{python Calls con expiracion 2025-01-17}
+opt_call = pd.read_csv('/cloud/project/Bases de Datos /Opciones_call_NVDA_Expiracion_2025-01-17.csv', delimiter=";")
 
-S = data['Close'].iloc[-1]
-nvda = yf.Ticker("META")
+S = data['Close'].iloc[-1]  # Precio actual del activo subyacente
+T = 0.315708  # Tiempo hasta la expiración (en años)
+K = opt_call[opt_call['inTheMoney'] == True].iloc[-1]
+lp = K["lastPrice"]
+K = K['strike'] # Precio de ejercicio de la opción
+r = 0.0444  # Tasa de interés libre de riesgo T_Bill 17 week
 
-opt = nvda.option_chain('2025-01-17')
-print(opt)
+print(f"Precio de ejercicio: {K}")
+print(f"Ultimo precio: {lp}")
 
+
+#https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_bill_rates&field_tdr_date_value=2024
 ```
 
 ```{python}
-# Parámetros del modelo binomial
-S = data['Close'].iloc[-1]  # Precio actual del activo subyacente
-K = 38  # Precio de ejercicio de la opción
-T = 1  # Tiempo hasta la expiración (en años)
-r = 0.0642  # Tasa de interés libre de riesgo
-u = 1.1  # Factor de crecimiento en un paso hacia arriba
-d = 0.9  # Factor de crecimiento en un paso hacia abajo
+# Modelo binomial
+import math
+
+rendimientos = np.diff(np.log(data['Close']))
+sigma = np.std(rendimientos[1:])  # Volatilidad
+diff = T/1
+
+#u = 1 + sigma * math.sqrt(diff)  # Factor de crecimiento de un paso
+#d = 1 - sigma * math.sqrt(diff)  # Factor de decrecimiento de un paso
+
+u = 1.2
+d = 0.9
 
 # Calcular los valores
 Su = S * u
@@ -167,7 +178,7 @@ cu = max(Su - K, 0)
 cd = max(Sd - K, 0)
 
 # Calcular el precio de la opción
-option_price = (cu * p + cd * (1 - p)) / (1 + rf)
+option_price = (cu * p + cd * (1 - p)) / (1 + r)
 
 # Imprimir el resultado
 print(f"El precio de la opción con el Modelo Binomial es: {option_price:.2f}")
@@ -190,20 +201,8 @@ def black_scholes(S, K, t, r, sigma):
     precio_call = S * N_d1 - K * np.exp(-r * t) * N_d2
     return precio_call
 
-
-# Cálculo de rendimientos y volatilidad
-rendimientos = np.diff(np.log(data['Close']))
-sigma = np.std(rendimientos[1:])  # Volatilidad
-volatilidad = np.var(rendimientos[1:])  # Varianza
-
-# Parámetros de la opción
-S = data['Close'].iloc[-1]  # Precio actual del activo subyacente
-K = 38  # Precio de ejercicio de la opción
-R = 0.0642  # Tasa de interés libre de riesgo
-t = 1  # Tiempo hasta la expiración (en años)
-
 # Calcular y mostrar el precio de la opción
-precio_opcion = black_scholes(S, K, t, R, sigma)
+precio_opcion = black_scholes(S, K, T, r, sigma)
 print(f"El precio de la opción con el Modelo Black and Scholes es {precio_opcion:.2f}")
 
 ```
