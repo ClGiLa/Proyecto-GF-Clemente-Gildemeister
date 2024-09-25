@@ -15,6 +15,7 @@ import seaborn as sns
 from datetime import timedelta
 import yfinance as yf
 from scipy.stats import norm
+import plotly.graph_objects as go
 ```
 
 # Hito 1:
@@ -32,30 +33,25 @@ En el ámbito académico, se han publicado varios estudios científicos que dest
 Además, el crecimiento de Nvidia en 2023 ha sido impulsado por la demanda global de infraestructura de IA, con sus procesadores siendo adoptados por gigantes tecnológicos como OpenAI y Google, lo que refuerza la relevancia del sector tecnológico en mercados como el S&P500 (El Sol de México) (El País).
 
 ```{python}
-# Lista de 10 empresas más grandes del S&P 500
-sp500_top10 = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'BRK-B', 'META', 'TSLA', 'XOM', 'JNJ']
+# Ticker de NVIDIA
+ticker = "NVDA"
 
-# Descargar datos históricos para las 10 empresas más grandes del S&P 500
-data = yf.download(sp500_top10, start="2023-01-01", end="2024-09-01", group_by='ticker')
+# Descargar datos históricos semanales para NVDA
+data = yf.download(ticker, start="2020-01-01", end="2024-09-01", interval="1wk")
 ```
 
-```{r ENELCHILEline}
-#| echo: false
-ENELCHILE %>%
-    ggplot(aes(x = date, y = close)) +
-    geom_line() +
-    labs(title = "ENELCHILE Line Chart", y = "Closing Price", x = "") + 
-    theme_tq() +
-  geom_hline(yintercept=mean(ENELCHILE$close), linetype="dashed", color = "red")
-```
+```{python NVDA Cierre historico}
+# Configurar el gráfico
+plt.figure(figsize=(20, 10))
+plt.plot(data.index, data['Close'], label='Precio de Cierre')
 
-```{r ENELCHILEcandle}
-#| warning: false
-ENELCHILE %>%
-    ggplot(aes(x = date, y = close)) +
-    geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
-    labs(title = "ENELCHILE Candlestick Chart", y = "Closing Price", x = "") +
-    theme_tq()
+plt.title('Precio de Cierre de NVDA')
+plt.xlabel('Fecha')
+plt.ylabel('Precio de Cierre')
+plt.grid()
+plt.legend()
+plt.show()
+
 ```
 
 ### Motivación
