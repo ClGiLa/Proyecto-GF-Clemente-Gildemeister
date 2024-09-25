@@ -9,10 +9,12 @@ lang: es-CL
 
 ```{python}
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import timedelta
 import yfinance as yf
+from scipy.stats import norm
 ```
 
 # Hito 1:
@@ -69,7 +71,38 @@ El estudio de García-Martín et al. (2021), que destaca cómo las GPUs de Nvidi
 Nvidia Corporation es uno de los principales actores del sector tecnológico en el Nasdaq, particularmente en el desarrollo de inteligencia artificial (IA) y procesadores gráficos (GPU). Nvidia se encuentra junto a líderes tecnológicos como Apple, Microsoft y Google en el Nasdaq. Para analizar las tendencias del sector y la posición competitiva de Nvidia, se presentan los precios históricos de Nvidia y sus principales rivales en el Nasdaq, como AMD e Intel: 
 
 ```{python}
+# Definir el rango de fechas
+end = data.index.max()  # Última fecha en el DataFrame
+start = end - timedelta(weeks=40)  # Hace 40 semanas
 
+# Filtrar los datos dentro del rango de fechas
+filtered_data = data.loc[start:end]
+
+# Seleccionar las columnas de precios de cierre ('Close') para cada empresa
+close_columns = [col for col in data.columns if col[1] == 'Close']
+filtered_data_close = filtered_data[close_columns]
+
+# Suavizar las líneas con medias móviles
+window_size = 7  # Puedes ajustar este valor para más o menos suavizado
+smoothed_data = filtered_data_close.rolling(window=window_size, min_periods=1).mean()
+
+# Crear el gráfico
+plt.figure(figsize=(12, 8))
+
+# Dibujar un gráfico de líneas suavizadas para cada empresa
+for col in smoothed_data.columns:
+    plt.plot(smoothed_data.index, smoothed_data[col], label=col[0])  # col[0] es el símbolo de la empresa
+
+# Configurar etiquetas y título
+plt.title('Comparación de Precios de Cierre para las 10 Mejores Empresas del S&P 500 \n (Suavisacion mediante medias moviles)', fontsize=16)
+plt.xlabel('Fecha', fontsize=12)
+plt.ylabel('Precio de Cierre', fontsize=12)
+plt.xticks(rotation=45)
+plt.legend(title="Empresa")
+plt.legend(loc="upper left")
+
+# Mostrar el gráfico
+plt.show()
 ```
 
 Si bien los montos de los precios dependen de otros factores, tales como la cantidad de acciones que componen la compañía, si se observan tendencias entre estas. La más clara es que ambas empresas de Enel siguen un mismo patrón de precios, lo que hace sentido ya que pertenecen al mismo grupo. Lo que también se aprecia, es que cuando el precio de Enel aumenta, tanto de Engie Energia Chile S.A como el de AES Gener SA disminuye. Esto se puede deber a que la variación en la participación que tiene en la industria cada uno de estas influye inversamente en la otra (a mayor participación de Enel Chile, menor será la de el resto de los suministradores nacionales).
@@ -140,28 +173,37 @@ print(paste("El precio de la opción con el Modelo Binomial es ", binomial_model
 
 ### Modelo Black and Scholes (BS)
 
-```{r}
-black_scholes <- function(S, K, t, r, sigma) {
-    d1 <- (log(S/K) + (r + 0.5 * sigma^2) * t) / (sigma * sqrt(t))
-    d2 <- d1 - sigma * sqrt(t)
-    N_d1 <- pnorm(d1)
-    N_d2 <- pnorm(d2)
-    precio_call <- S * N_d1 - K * exp(-r * t) * N_d2
-    return(precio_call)
-  }
-  
-rendimientos <- diff(log(ENELCHILE$close))
-sigma<-sd(rendimientos[2:length(rendimientos)])
-volatilidad<-var(rendimientos[2:length(rendimientos)])
+```{python}
+import numpy as np
+import pandas as pd
+from scipy.stats import norm
 
+# Definición de la función Black-Scholes
+def black_scholes(S, K, t, r, sigma):
+    d1 = (np.log(S / K) + (r + 0.5 * sigma**2) * t) / (sigma * np.sqrt(t))
+    d2 = d1 - sigma * np.sqrt(t)
+    N_d1 = norm.cdf(d1)
+    N_d2 = norm.cdf(d2)
+    precio_call = S * N_d1 - K * np.exp(-r * t) * N_d2
+    return precio_call
 
-S<- tail(ENELCHILE$close,1) # Precio actual del activo subyacente
-K<- 38 # Precio de ejercicio de la opción
-R<- 0.0642 # Tasa de interés libre de riesgo
-t <- 1 # Tiempo hasta la expiración (en años)
+# Supongamos que ENELCHILE es un DataFrame de pandas con una columna 'close'
+# ENELCHILE = pd.read_csv('ruta_al_archivo.csv')  # Cargar los datos si es necesario
 
-print(paste("El precio de la opción con el Modelo Black and Scholes es ", black_scholes(S, K, t, R, sigma)))
+# Cálculo de rendimientos y volatilidad
+rendimientos = np.diff(np.log(ENELCHILE['close']))
+sigma = np.std(rendimientos[1:])  # Volatilidad
+volatilidad = np.var(rendimientos[1:])  # Varianza
 
+# Parámetros de la opción
+S = ENELCHILE['close'].iloc[-1]  # Precio actual del activo subyacente
+K = 38  # Precio de ejercicio de la opción
+R = 0.0642  # Tasa de interés libre de riesgo
+t = 1  # Tiempo hasta la expiración (en años)
+
+# Calcular y mostrar el precio de la opción
+precio_opcion = black_scholes(S, K, t, R, sigma)
+print(f"El precio de la opción con el Modelo Black and Scholes es {precio_opcion:.2f}")
 
 ```
 
