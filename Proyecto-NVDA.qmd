@@ -74,37 +74,26 @@ El estudio de García-Martín et al. (2021), que destaca cómo las GPUs de Nvidi
 Nvidia Corporation es uno de los principales actores del sector tecnológico en el S&P500, particularmente en el desarrollo de inteligencia artificial (IA) y procesadores gráficos (GPU). Nvidia se encuentra junto a líderes tecnológicos como Apple, Microsoft y Google en el Nasdaq. Para analizar las tendencias del sector y la posición competitiva de Nvidia, se presentan los precios históricos de Nvidia y sus principales rivales en el S&P500, como AMD e Intel: 
 
 ```{python}
-# Definir el rango de fechas
-end = data.index.max()  # Última fecha en el DataFrame
-start = end - timedelta(weeks=40)  # Hace 40 semanas
+# Lista de 10 empresas más grandes del S&P 500
+sp500_top10 = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'BRK-B', 'META', 'TSLA', 'XOM', 'JNJ']
 
-# Filtrar los datos dentro del rango de fechas
-filtered_data = data.loc[start:end]
+# Descargar datos históricos para las 10 empresas más grandes del S&P 500
+data2 = yf.download(sp500_top10, start="2020-01-01", end="2024-09-01", interval="1wk", group_by='ticker')
 
-# Seleccionar las columnas de precios de cierre ('Close') para cada empresa
-close_columns = [col for col in data.columns if col[1] == 'Close']
-filtered_data_close = filtered_data[close_columns]
+# Asegúrate de que los índices de los DataFrames sean consistentes
+data2 = data2.stack(level=0).rename_axis(['Date', 'Ticker']).reset_index()
 
-# Suavizar las líneas con medias móviles
-window_size = 7  # Puedes ajustar este valor para más o menos suavizado
-smoothed_data = filtered_data_close.rolling(window=window_size, min_periods=1).mean()
+# Gráfico de líneas para todos los tickers
+plt.figure(figsize=(14, 7))
 
-# Crear el gráfico
-plt.figure(figsize=(12, 8))
+for ticker in sp500_top10:
+    plt.plot(data2[data2['Ticker'] == ticker]['Date'], data2[data2['Ticker'] == ticker]['Close'], label=ticker)
 
-# Dibujar un gráfico de líneas suavizadas para cada empresa
-for col in smoothed_data.columns:
-    plt.plot(smoothed_data.index, smoothed_data[col], label=col[0])  # col[0] es el símbolo de la empresa
-
-# Configurar etiquetas y título
-plt.title('Comparación de Precios de Cierre para las 10 Mejores Empresas del S&P 500 \n (Suavisacion mediante medias moviles)', fontsize=16)
-plt.xlabel('Fecha', fontsize=12)
-plt.ylabel('Precio de Cierre', fontsize=12)
-plt.xticks(rotation=45)
-plt.legend(title="Empresa")
-plt.legend(loc="upper left")
-
-# Mostrar el gráfico
+plt.title('Precio de Cierre de las 10 Mejores Empresas del S&P 500')
+plt.xlabel('Fecha')
+plt.ylabel('Precio de Cierre (USD)')
+plt.legend()
+plt.grid()
 plt.show()
 ```
 
@@ -150,27 +139,43 @@ $$
 V = \frac{C_u\cdot P + C_d\cdot (1-P)}{1+r}
 $$
 
-```{r}
-binomial_model <- function(cu, p, cd, rf) {
-  return((cu*p + cd*(1-p))/(1+rf))
-} 
+```{python}
+nvda = yf.Ticker("NVDA")
+# Obtener las fechas de vencimiento de opciones
+opciones = nvda.options
+print("Fechas de vencimiento:", opciones)
 
-S <- tail(ENELCHILE$close,1)  # Precio actual del activo subyacente
-K <- 38  # Precio de ejercicio de la opción
-T <- 1  # Tiempo hasta la expiración (en años)
-r <- 0.0642 # Tasa de interés libre de riesgo
-u <- 1.1  # Factor de crecimiento en un paso hacia arriba
-d <- 0.9  # Factor de crecimiento en un paso hacia abajo
+# Obtener los datos de opciones para una fecha específica
+opciones_data = nvda.option_chain(opciones[0])  # Cambia el índice según la fecha de vencimiento deseada
+calls = opciones_data.calls
+puts = opciones_data.puts
+```
 
-Su <- S*u
-Sd <- S*d
-p <- (1+r-d)/((1+r)*(u-d))
+```{python}
+# Parámetros del modelo binomial
+S = data['Close'].iloc[-1]  # Precio actual del activo subyacente
+K = 38  # Precio de ejercicio de la opción
+T = 1  # Tiempo hasta la expiración (en años)
+r = 0.0642  # Tasa de interés libre de riesgo
+u = 1.1  # Factor de crecimiento en un paso hacia arriba
+d = 0.9  # Factor de crecimiento en un paso hacia abajo
 
-cu <- max(Su - K, 0)
-cd <- max(Sd - K, 0)
+def binomial_model(cu, p, cd, rf):
+    return (cu * p + cd * (1 - p)) / (1 + rf)
 
+# Calcular los valores
+Su = S * u
+Sd = S * d
+p = (1 + r - d) / ((1 + r) * (u - d))
 
-print(paste("El precio de la opción con el Modelo Binomial es ", binomial_model(cu, p, cd, r)))
+cu = max(Su - K, 0)
+cd = max(Sd - K, 0)
+
+# Calcular el precio de la opción
+option_price = binomial_model(cu, p, cd, r)
+
+# Imprimir el resultado
+print(f"El precio de la opción con el Modelo Binomial es: {option_price:.2f}")
 
 ```
 
@@ -190,16 +195,14 @@ def black_scholes(S, K, t, r, sigma):
     precio_call = S * N_d1 - K * np.exp(-r * t) * N_d2
     return precio_call
 
-# Supongamos que ENELCHILE es un DataFrame de pandas con una columna 'close'
-# ENELCHILE = pd.read_csv('ruta_al_archivo.csv')  # Cargar los datos si es necesario
 
 # Cálculo de rendimientos y volatilidad
-rendimientos = np.diff(np.log(ENELCHILE['close']))
+rendimientos = np.diff(np.log(data['Close']))
 sigma = np.std(rendimientos[1:])  # Volatilidad
 volatilidad = np.var(rendimientos[1:])  # Varianza
 
 # Parámetros de la opción
-S = ENELCHILE['close'].iloc[-1]  # Precio actual del activo subyacente
+S = data['Close'].iloc[-1]  # Precio actual del activo subyacente
 K = 38  # Precio de ejercicio de la opción
 R = 0.0642  # Tasa de interés libre de riesgo
 t = 1  # Tiempo hasta la expiración (en años)
