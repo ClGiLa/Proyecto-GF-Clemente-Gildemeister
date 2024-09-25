@@ -29,8 +29,6 @@ En el ámbito académico, se han publicado varios estudios científicos que dest
 
 Además, el crecimiento de Nvidia en 2023 ha sido impulsado por la demanda global de infraestructura de IA, con sus procesadores siendo adoptados por gigantes tecnológicos como OpenAI y Google, lo que refuerza la relevancia del sector tecnológico en mercados como el Nasdaq (El Sol de México) (El País).
 
-Por otro lado, también es de suma importancia tener en consideración los precios históricos del activo ENELCHILE, el cual actualmente tiene un valor promedio para el intervalo de años 2017-presente igual a `r round(mean(ENELCHILE$close),digits=0)`. A continuación se presentan dos gráficos que muestran estos datos históricos:
-
 ```{python}
 # Lista de 10 empresas más grandes del S&P 500
 sp500_top10 = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'BRK-B', 'META', 'TSLA', 'XOM', 'JNJ']
@@ -60,35 +58,18 @@ ENELCHILE %>%
 
 ### Motivación
 
-Se escogió este activo en particular debido al compromiso con el medio ambiente y a indicadores ASG (Ambiental, Social y Gobernanza), alguno de sus objetivos son:
+Nvidia Corporation fue seleccionada por su papel clave en la innovación y desarrollo de tecnologías avanzadas de inteligencia artificial (IA), lo que la ha posicionado como un líder tecnológico indiscutible. Nvidia ha revolucionado la computación de alto rendimiento con su arquitectura CUDA y los Tensor Cores, que permiten el entrenamiento y la ejecución de modelos de IA mucho más grandes y complejos. Las aplicaciones de IA generativa como ChatGPT de OpenAI, que dependen de la capacidad de procesamiento masivo de las GPU de Nvidia, dependen de estos avances. (infobae)(El País).
 
-Alcanzar un 80% de energía renovable en su matriz de generación para 2024, reducir las emisiones de gases de efecto invernadero en un 40% para 2025 y aumentar la eficiencia energética en un 20% para 2030.
+Nvidia no solo ha liderado la innovación en IA, sino que también ha creado una infraestructura crucial para la expansión de la IA en sectores como los centros de datos, que son cruciales para empresas tecnológicas globales como Google, Microsoft y Meta. La plataforma Nvidia DGX ha sido fundamental para los modelos de aprendizaje profundo y el entrenamiento de redes neuronales, lo que ha permitido avances en campos importantes como la medicina, los vehículos autónomos y la robótica. Nvidia ha logrado posicionarse como la tercera empresa más valiosa en Estados Unidos gracias a su enfoque constante en el desarrollo de IA y computación acelerada, con una capitalización de mercado que supera los 2 billones de dólares (Expansión) (El Sol de México).
 
-Como menciona el Diario Financiero (DF) Enel Chile sostiene una estrategia de sostenibilidad para llegar a ser una empresa carbono neutral al año 2040. Para lograr este objetivo, Enel destinará US\$1.700 millones a temas ASG, los que principalmente se gastarán en la construcción de nuevas plantas de energías renovables.
-
-Asimismo, varios documentos de la WOS (Web of Science) sustentan la iniciativa medioambiental de Enel Chile, principalmente con tarifas variables que logren cambiar los hábitos de uso de energía, homeostaticidad energética, entre otros.
-
-Todos estos puntos fomentan el interés especifico sobre este activo por sobre los demás activos energéticos incluidos en el IPSA.
+El estudio de García-Martín et al. (2021), que destaca cómo las GPUs de Nvidia mejoran el rendimiento computacional y optimizan el consumo de energía, lo cual es crucial para la IA sostenible, respalda la decisión de centrarse en Nvidia para este análisis. Nvidia se ha convertido en un actor importante en el futuro de la inteligencia artificial en todo el mundo gracias a los avances en la adopción de IA en sectores tradicionales y emergentes (El País).
 
 ### Contexto
 
-El IPSA tiene 4 componentes de la industria de energía, Enel Chile S.A, Enel Latinoamerica S.A, Engie Energia Chile S.A y AES Gener SA. Los primeros 2 corresponden a la empresa italiana Enel. A continuación se presentan los precios históricos de cada una de estas acciones:
+Nvidia Corporation es uno de los principales actores del sector tecnológico en el Nasdaq, particularmente en el desarrollo de inteligencia artificial (IA) y procesadores gráficos (GPU). Nvidia se encuentra junto a líderes tecnológicos como Apple, Microsoft y Google en el Nasdaq. Para analizar las tendencias del sector y la posición competitiva de Nvidia, se presentan los precios históricos de Nvidia y sus principales rivales en el Nasdaq, como AMD e Intel: 
 
-```{r context}
-#| warning: false
-#| echo: false
-start <- end - weeks(6)
+```{python}
 
-CL %>%
-    filter(date >= start - days(2 * 15)) %>%
-    ggplot(aes(x = date, y = close, group = symbol)) +
-    geom_line() +
-    labs(title = "Activos Energía IPSA", 
-         subtitle = "Comparativo de activos del sector",
-         y = "Precio al cierrew", x = "") + 
-    coord_x_date(xlim = c(start, end)) +
-    facet_wrap(~ symbol, ncol = 2, scale = "free_y") +
-    theme_tq()
 ```
 
 Si bien los montos de los precios dependen de otros factores, tales como la cantidad de acciones que componen la compañía, si se observan tendencias entre estas. La más clara es que ambas empresas de Enel siguen un mismo patrón de precios, lo que hace sentido ya que pertenecen al mismo grupo. Lo que también se aprecia, es que cuando el precio de Enel aumenta, tanto de Engie Energia Chile S.A como el de AES Gener SA disminuye. Esto se puede deber a que la variación en la participación que tiene en la industria cada uno de estas influye inversamente en la otra (a mayor participación de Enel Chile, menor será la de el resto de los suministradores nacionales).
