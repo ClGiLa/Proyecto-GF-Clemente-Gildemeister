@@ -29,7 +29,7 @@ Nvidia Corporation pertenece al sector tecnológico, con un enfoque clave en har
 
 En el ámbito académico, se han publicado varios estudios científicos que destacan el rol de Nvidia en la optimización del consumo de energía para entrenar modelos de aprendizaje automático. En particular, el artículo de García-Martín et al. (2021) analiza cómo las GPUs de Nvidia han reducido significativamente la cantidad de energía utilizada en estos procesos, permitiendo una mayor eficiencia y reduciendo la huella de carbono (Expansión). Este tipo de investigaciones científicas caracteriza y valida el impacto de Nvidia dentro del sector de la IA y su papel en la aceleración de tecnologías de próxima generación.
 
-Además, el crecimiento de Nvidia en 2023 ha sido impulsado por la demanda global de infraestructura de IA, con sus procesadores siendo adoptados por gigantes tecnológicos como OpenAI y Google, lo que refuerza la relevancia del sector tecnológico en mercados como el Nasdaq (El Sol de México) (El País).
+Además, el crecimiento de Nvidia en 2023 ha sido impulsado por la demanda global de infraestructura de IA, con sus procesadores siendo adoptados por gigantes tecnológicos como OpenAI y Google, lo que refuerza la relevancia del sector tecnológico en mercados como el S&P500 (El Sol de México) (El País).
 
 ```{python}
 # Lista de 10 empresas más grandes del S&P 500
@@ -68,7 +68,7 @@ El estudio de García-Martín et al. (2021), que destaca cómo las GPUs de Nvidi
 
 ### Contexto
 
-Nvidia Corporation es uno de los principales actores del sector tecnológico en el Nasdaq, particularmente en el desarrollo de inteligencia artificial (IA) y procesadores gráficos (GPU). Nvidia se encuentra junto a líderes tecnológicos como Apple, Microsoft y Google en el Nasdaq. Para analizar las tendencias del sector y la posición competitiva de Nvidia, se presentan los precios históricos de Nvidia y sus principales rivales en el Nasdaq, como AMD e Intel: 
+Nvidia Corporation es uno de los principales actores del sector tecnológico en el Nasdaq, particularmente en el desarrollo de inteligencia artificial (IA) y procesadores gráficos (GPU). Nvidia se encuentra junto a líderes tecnológicos como Apple, Microsoft y Google en el Nasdaq. Para analizar las tendencias del sector y la posición competitiva de Nvidia, se presentan los precios históricos de Nvidia y sus principales rivales en el S&P500, como AMD e Intel: 
 
 ```{python}
 # Definir el rango de fechas
